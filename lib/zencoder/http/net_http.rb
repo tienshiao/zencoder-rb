@@ -75,7 +75,7 @@ module Zencoder
           http.use_ssl = true
 
           if !skip_ssl_verify && ca_file
-            http.ca_path = ca_file
+            http.ca_file = ca_file
             http.verify_mode = OpenSSL::SSL::VERIFY_PEER
             http.verify_depth = 5
           elsif !skip_ssl_verify && root_cert_path = locate_root_cert_path
