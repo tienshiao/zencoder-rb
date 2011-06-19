@@ -5,7 +5,7 @@ module Zencoder
   class HTTP < Base
     class NetHTTP
 
-      attr_accessor :method, :url, :uri, :body, :params, :headers, :timeout, :skip_ssl_verify, :options
+      attr_accessor :method, :url, :uri, :body, :params, :headers, :timeout, :skip_ssl_verify, :ca_file, :options
 
       cattr_accessor :root_cert_paths
 
@@ -29,6 +29,7 @@ module Zencoder
         @headers         = options.delete(:headers)
         @timeout         = options.delete(:timeout)
         @skip_ssl_verify = options.delete(:skip_ssl_verify)
+        @ca_file         = options.delete(:ca_file)
         @options         = options
       end
 
@@ -73,7 +74,11 @@ module Zencoder
         if u.scheme == 'https'
           http.use_ssl = true
 
-          if !skip_ssl_verify && root_cert_path = locate_root_cert_path
+          if !skip_ssl_verify && ca_file
+            http.ca_path = ca_file
+            http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+            http.verify_depth = 5
+          elsif !skip_ssl_verify && root_cert_path = locate_root_cert_path
             http.ca_path = root_cert_path
             http.verify_mode = OpenSSL::SSL::VERIFY_PEER
             http.verify_depth = 5
